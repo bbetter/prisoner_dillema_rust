@@ -91,19 +91,21 @@ fn main() {
             let s1_name = s1.name().clone();
             let s2_name = s2.name().clone();
 
-            let mut score_updates = HashMap::new();
-            score_updates.entry(s1_name).or_insert(0).add_assign(s1_score);
-            score_updates.entry(s2_name).or_insert(0).add_assign(s2_score);
+            match table.entry(s1_name) {
+                Entry::Occupied(mut entry) => {
+                    *entry.get_mut() += s1_score;
+                }
+                Entry::Vacant(entry) => {
+                    entry.insert(s1_score);
+                }
+            }
 
-            // Update the scores in the main table after the loop
-            for (name, score) in score_updates {
-                match table.entry(name) {
-                    Entry::Occupied(mut entry) => {
-                        *entry.get_mut() += score;
-                    }
-                    Entry::Vacant(entry) => {
-                        entry.insert(score);
-                    }
+            match table.entry(s2_name) {
+                Entry::Occupied(mut entry) => {
+                    *entry.get_mut() += s2_score;
+                }
+                Entry::Vacant(entry) => {
+                    entry.insert(s2_score);
                 }
             }
         }
